@@ -1,27 +1,25 @@
-function createPetal() {
-    const petal = document.createElement('div');
-    petal.classList.add('sakura-petal');
-    document.body.appendChild(petal);
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('ballContainer');
+    const ball = document.createElement('div');
+    ball.classList.add('ball');
+    container.appendChild(ball);
 
-    // 花びらの初期位置とサイズをランダムに設定
-    petal.style.left = Math.random() * window.innerWidth + 'px';
-    petal.style.width = Math.random() * 10 + 5 + 'px';
-    petal.style.height = petal.style.width;
-    petal.style.opacity = Math.random();
+    let lastTime = null;
+    const g = 9.8; // 重力加速度 (m/s^2)
+    let position = 0; // 開始位置
+    const scale = 100; // 画面上のピクセルと現実世界のメートルの比率
 
-    // アニメーションの速度と方向をランダムに設定
-    const speed = Math.random() * 5 + 2;
-    petal.style.animationDuration = speed + 's';
-    petal.style.animationName = 'fall';
-    petal.style.animationIterationCount = 'infinite';
-    petal.style.animationTimingFunction = 'linear';
+    function update(time) {
+        if (lastTime != null) {
+            const delta = (time - lastTime) / 1000; // 秒単位に変換
+            position += 0.5 * g * delta * delta * scale;
+            ball.style.top = `${position}px`;
+        }
+        if (position < window.innerHeight) {
+            lastTime = time;
+            requestAnimationFrame(update);
+        }
+    }
 
-    // 一定時間後に花びらを削除
-    setTimeout(() => {
-        petal.remove();
-    }, speed * 1000);
-}
-
-setInterval(createPetal, 300);
-
-// CSSの`@keyframes`と一致する名前で落下アニメーションを追加
+    requestAnimationFrame(update);
+});
